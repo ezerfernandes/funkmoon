@@ -32,6 +32,28 @@ FunctionalTable adds a metatable that allows to call the functions as methods an
 
 ## Examples
 ### Map
+```
+local list = {3, 5, 8}
+local squares = map(list, function(n) return n*n end) -- Result: {9, 25, 64}
+```
+
+### flatMap
+```
+```
+
+### filter
+```
+local list = {1, 4, 6, 3, 7}
+local oddNumbers = filter(list, function(n) return n % 2 == 1 end) -- Result: {1, 3, 7}
+```
+
+### foldLeft
+```
+local list = {1, 2, 3, 4, 5}
+local sum = foldLeft(0)(list, function(acc, n) return acc + n end) -- Result: 16
+```
+
+### foldRight
 
 ```
 ```
