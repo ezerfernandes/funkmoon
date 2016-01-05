@@ -22,10 +22,16 @@ require "funkmoon"
 -- Returns the sum of the squares of even numbers.
 local list = FunctionalTable({1, 2, -3, 4, 9, 8})
 
-local sumOfSquaresEvenNumbers = list:filter(function(n) return n % 2 == 0 end):map(function(n) return n*n end):reduce(function(a, b) return a + b end)
+local sumOfSquaresEvenNumbers = list
+        :filter(function(n) return n % 2 == 0 end)
+        :map(function(n) return n*n end)
+        :reduce(function(a, b) return a + b end)
 ```
 
+FunctionalTable adds a metatable that allows to call the functions as methods and use this development style.
+
 ## Examples
+### Map
 
-### Map a 
-
+```
+```
