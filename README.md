@@ -50,7 +50,7 @@ local oddNumbers = filter(list, function(n) return n % 2 == 1 end) -- Result: {1
 ### foldLeft
 ```lua
 local list = {1, 2, 3, 4, 5}
-local sum = foldLeft(0)(list, function(acc, n) return acc + n end) -- Result: 16
+local sum = foldLeft(list, 0)(function(acc, n) return acc + n end) -- Result: 16
 ```
 
 ### foldRight
