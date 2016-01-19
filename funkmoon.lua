@@ -1,21 +1,23 @@
 -- Functional tools for Lua v0.01
 
-function map(list, fn)
+local funkmoon = {}
+
+function funkmoon.map(list, fn)
     -- Builds a new list by applying 'fn' to each element of 'list'
-    local mapped = FunctionalTable({})
+    local mapped = {}
     for index, elem in pairs(list) do
         mapped[index] = fn(elem)
     end
-    return mapped
+    return funkmoon.FunctionalTable(mapped)
 end
 
-function flatMap(list, fn)
+function funkmoon.flatMap(list, fn)
     --[[
     Builds a new table by applying 'fn' to all elements of 'list'
     and using the elements of the resulting tables.
     ]]--
-    local mapped = map(list, fn)
-    local flattened = FunctionalTable({})
+    local mapped = funkmoon.map(list, fn)
+    local flattened = {}
     local function flatten(list)
         for _, elem in pairs(list) do
             if type(elem) ~= "table" then
@@ -26,14 +28,14 @@ function flatMap(list, fn)
         end
     end
     flatten(mapped)
-    return flattened
+    return funkmoon.FunctionalTable(flattened)
 end
 
 local function _isArrayIndex(i, maxn)
     return type(i) == "number" and i > 0 and i <= maxn
 end
 
-function filter(list, predicate)
+function funkmoon.filter(list, predicate)
     -- Selects all elements of 'list' which satisfy 'predicate'.
     local filtered = {}
     local n = #list
@@ -46,35 +48,35 @@ function filter(list, predicate)
             end
         end
     end
-    return FunctionalTable(filtered)
+    return funkmoon.FunctionalTable(filtered)
 end
 
-function filterNot(list, predicate)
+function funkmoon.filterNot(list, predicate)
     -- Selects all elements of 'list' which don't satisfy 'predicate'.
-    return filter(list, function(n) return not predicate(n) end)
+    return funkmoon.filter(list, function(n) return not predicate(n) end)
 end
 
-function find(list, predicate)
+function funkmoon.find(list, predicate)
     -- Finds the first element of 'list' satisfying a predicate, if any.
     for i, elem in pairs(list) do
         if predicate(elem) then
-            return FunctionalTable({ [i] = elem })
+            return funkmoon.FunctionalTable({ [i] = elem })
         end
     end
-    return FunctionalTable({})
+    return funkmoon.FunctionalTable({})
 end
 
-function arrayPart(list)
+function funkmoon.arrayPart(list)
     -- Returns the array-like part of list (1 to n).
-    local newList = FunctionalTable({})
+    local newList = {}
     for i, elem in ipairs(list) do
         newList[i] = elem
     end
-    return newList
+    return funkmoon.FunctionalTable(newList)
 end
 
 -- TODO: Use the logic of filter here.
-function partition(list, predicate)
+function funkmoon.partition(list, predicate)
     -- Partitions 'list' in two tables according to 'predicate'.
     local trueList = {}
     local falseList = {}
@@ -85,12 +87,12 @@ function partition(list, predicate)
             table.insert(falseList, elem)
         end
     end
-    return FunctionalTable(trueList), FunctionalTable(falseList)
+    return funkmoon.FunctionalTable(trueList), funkmoon.FunctionalTable(falseList)
 end
 
-function takeWhile(list, predicate)
+function funkmoon.takeWhile(list, predicate)
     -- Takes longest prefix of elements of 'list' that satisfy 'predicate'.
-    local newList = FunctionalTable({})
+    local newList = funkmoon.FunctionalTable({})
     for i, elem in pairs(list) do
         if predicate(elem) == true then
             newList[i] = elem
@@ -101,10 +103,10 @@ function takeWhile(list, predicate)
     return newList
 end
 
-function dropWhile(list, predicate)
+function funkmoon.dropWhile(list, predicate)
     -- Drops longest prefix of elements of 'list' that satisfy 'predicate'.
     local satisfiesPredicate = true
-    local newList = FunctionalTable({})
+    local newList = funkmoon.FunctionalTable({})
     for _, elem in pairs(list) do
         if predicate(elem) ~= true then
             satisfiesPredicate = false
@@ -137,7 +139,7 @@ local function _fold(list, startValue, foldLeft)
     return reduceList
 end
 
-function foldLeft(list, startValue)
+function funkmoon.foldLeft(list, startValue)
     --[[
     Usage: foldLeft(list, firstValue)(fn)
     Applies a binary function (fn) to startValue and all elements of 'list',
@@ -149,7 +151,7 @@ function foldLeft(list, startValue)
     return _fold(list, startValue, true)
 end
 
-function foldRight(list, startValue)
+function funkmoon.foldRight(list, startValue)
     --[[
     Usage: foldRight(list, firstValue)(fn)
     Applies a binary function (fn) to startValue and all elements of 'list',
@@ -161,7 +163,7 @@ function foldRight(list, startValue)
     return _fold(list, startValue, false)
 end
 
-function reduce(list, fn)
+function funkmoon.reduce(list, fn)
     -- Reduces the elements of 'list' using the binary operator 'fn'.
     local firstValue = list[1]
     local newList = {}
@@ -177,7 +179,7 @@ function reduce(list, fn)
     return accumulator
 end
 
-function exists(list, predicate)
+function funkmoon.exists(list, predicate)
     -- Tests whether 'predicate' holds for some of the elements of 'list'.
     local acc = false
     for _, elem in pairs(list) do
@@ -186,7 +188,7 @@ function exists(list, predicate)
     return acc
 end
 
-function forall(list, predicate)
+function funkmoon.forall(list, predicate)
     -- Tests whether 'predicate' holds for all elements of 'list'.
     local acc = true
     for _, elem in pairs(list) do
@@ -195,7 +197,19 @@ function forall(list, predicate)
     return acc
 end
 
-function corresponds(list, otherList)
+function funkmoon.corresponds(list, otherList)
+    --[[
+    Usage: corresponds(list, otherList)(predicate) -> returns a boolean.
+
+    Tests whether every element of 'list' relates to the corresponding element
+    of 'otherList' by satisfying a test predicate.
+
+    list -> a table
+    otherList -> another table
+
+    predicate(a, b) -> a function that gets the ith element of list and
+    otherList and compares them, returning true or false.
+    ]]
     local function match(comparison)
         if table.maxn(list) ~= table.maxn(otherList) then
             return false
@@ -210,13 +224,13 @@ function corresponds(list, otherList)
     return match
 end
 
-function fill(n)
+function funkmoon.fill(n)
     --[[
     Usage: fill(times)(value)
     Creates a table with 'value' repeated 'n' times.
     ]]--
     local function newFunction(value)
-        local newList = FunctionalTable({})
+        local newList = funkmoon.FunctionalTable({})
         for i = 1, n do
             table.insert(newList, value)
         end
@@ -225,10 +239,10 @@ function fill(n)
     return newFunction
 end
 
-function distinct(list)
+function funkmoon.distinct(list)
     -- Builds a new list from this 'list' with no duplicate elements.
     local tempTable = {}
-    local newList = FunctionalTable({})
+    local newList = funkmoon.FunctionalTable({})
     for _, elem in pairs(list) do
         tempTable[elem] = true
     end
@@ -240,8 +254,13 @@ function distinct(list)
     return newList
 end
 
-function groupBy(list, fn)
-    local newTable = FunctionalTable({})
+function funkmoon.groupBy(list, fn)
+    --[[
+    Gets the elements and keys from 'list' and partitions them by the result of
+    the function fn(key, element), returning a new table where fn(key, element)
+    are the keys and the values are tables with the keys and values.
+    ]]
+    local newTable = funkmoon.FunctionalTable({})
     for i, elem in pairs(list) do
         if newTable[fn(i, elem)] == nil then
             newTable[fn(i, elem)] = {}
@@ -251,7 +270,7 @@ function groupBy(list, fn)
     return newTable
 end
 
-function partial(fn, ...)
+function funkmoon.partial(fn, ...)
     -- Returns a new function with partial application of the given arguments.
     local defArgs = arg
     local function newFunction(...)
@@ -260,7 +279,7 @@ function partial(fn, ...)
     return newFunction
 end
 
-function isEmpty(list)
+function funkmoon.isEmpty(list)
     -- Teste whether 'list' is empty.
     for _, _ in pairs(list) do
         return false
@@ -282,16 +301,22 @@ local function _compare_maxmin(list, initialValue, comparisonFunction)
     end
 end
 
-function max(list)
+function funkmoon.max(list)
+    -- TODO: Documentar
     return _compare_maxmin(list, -math.huge, function(n, t) return n > t end)
 end
 
-function min(list)
+function funkmoon.min(list)
+    -- TODO: Documentar
     return _compare_maxmin(list, math.huge, function(n, t) return n < t end)
 end
 
-function zip(list, otherList)
-    local zippedList = FunctionalTable({})
+function funkmoon.zip(list, otherList)
+    --[[
+    Returns a new table formed from 'list' and 'otherList'
+    by combining corresponding elements in pairs.
+    ]]
+    local zippedList = funkmoon.FunctionalTable({})
     local maxn_list = table.maxn(list)
     local maxn_otherlist = table.maxn(otherList)
     local minMaxI
@@ -306,7 +331,11 @@ function zip(list, otherList)
     return zippedList
 end
 
-function unzip(list)
+function funkmoon.unzip(list)
+    --[[
+    Converts this 'list' of pairs into two tables of the first
+    and second half of each pair.
+    ]]
     local zip1 = {}
     local zip2 = {}
     for _, elem in pairs(list) do
@@ -316,16 +345,18 @@ function unzip(list)
     return zip1, zip2
 end
 
-function slice(list, from, to)
-    local newList = FunctionalTable({})
+function funkmoon.slice(list, from, to)
+    -- Returns a new table with the elements of 'list' from 'from' to 'to'.
+    local newList = funkmoon.FunctionalTable({})
     for i = from, to do
         table.insert(newList, list[i])
     end
     return newList
 end
 
-function reverse(list)
-    local newList = FunctionalTable({})
+function funkmoon.reverse(list)
+    -- Returns a new table with the elements of 'list' reversed.
+    local newList = funkmoon.FunctionalTable({})
     local length = table.maxn(list)
     for i = length, 1, -1 do
         table.insert(newList, list[i])
@@ -333,8 +364,9 @@ function reverse(list)
     return newList
 end
 
-function distinct(list)
-    local newList = FunctionalTable({})
+function funkmoon.distinct(list)
+    -- Returns a new table with all dinstinct elements of 'list'.
+    local newList = funkmoon.FunctionalTable({})
     local newListElems = {}
     for _, elem in list do
         newListElems[elem] = true
@@ -345,40 +377,40 @@ function distinct(list)
     return newList
 end
 
-local functionalTools  = {
-    map = map,
-    flatMap = flatMap,
-    filter = filter,
-    filterNot = filterNot,
-    find = find,
-    arrayPart = arrayPart,
-    partition = partition,
-    foldLeft = foldLeft,
-    foldRight = foldRight,
-    reduce = reduce,
-    exists = exists,
-    forall = forall,
-    corresponds = corresponds,
-    distinct = distinct,
-    groupBy = groupBy,
-    takeWhile = takeWhile,
-    dropWhile = dropWhile,
-    isEmpty = isEmpty,
-    max = max,
-    min = min,
-    zip = zip,
-    unzip = unzip,
-    slice = slice,
-    reverse = reverse,
-    distinct = distinct
+local funkMetaTable  = {
+    map = funkmoon.map,
+    flatMap = funkmoon.flatMap,
+    filter = funkmoon.filter,
+    filterNot = funkmoon.filterNot,
+    find = funkmoon.find,
+    arrayPart = funkmoon.arrayPart,
+    partition = funkmoon.partition,
+    foldLeft = funkmoon.foldLeft,
+    foldRight = funkmoon.foldRight,
+    reduce = funkmoon.reduce,
+    exists = funkmoon.exists,
+    forall = funkmoon.forall,
+    corresponds = funkmoon.corresponds,
+    distinct = funkmoon.distinct,
+    groupBy = funkmoon.groupBy,
+    takeWhile = funkmoon.takeWhile,
+    dropWhile = funkmoon.dropWhile,
+    isEmpty = funkmoon.isEmpty,
+    max = funkmoon.max,
+    min = funkmoon.min,
+    zip = funkmoon.zip,
+    unzip = funkmoon.unzip,
+    slice = funkmoon.slice,
+    reverse = funkmoon.reverse,
+    distinct = funkmoon.distinct
     }
 
-function FunctionalTable(list)
-    setmetatable(list, { __index = functionalTools })
+function funkmoon.FunctionalTable(list)
+    setmetatable(list, { __index = funkMetaTable })
     return list
 end
 
-function Listify(elemTable)
+function funkmoon.Listify(elemTable)
     local list = {}
     for i, elem in pairs(elemTable) do
         if type(i) == "number" then
@@ -389,3 +421,5 @@ function Listify(elemTable)
     end
     return list
 end
+
+return funkmoon
