@@ -5,22 +5,22 @@ It's a collection of functions that can be used to manipulate tables in a functi
 ## Ways of using it
 ### Using as standalone functions
 ```lua
-require "funkmoon"
+local funkmoon = require "funkmoon"
 
 local list = {1, 2, -3, 4}
 
 -- Returns only even numbers.
-local even = filter(list, function(n) return n % 2 == 0 end)
+local even = funkmoon.filter(list, function(n) return n % 2 == 0 end)
 ```
 
 ### Using functions as methods
 This is the preferred way if you want to use several functions as a pipeline, simulating what you can do in functional languages as Scala, for example.
 
 ```lua
-require "funkmoon"
+local funkmoon = require "funkmoon"
 
 -- Returns the sum of the squares of even numbers.
-local list = FunctionalTable({1, 2, -3, 4, 9, 8})
+local list = funkmoon.FunctionalTable({1, 2, -3, 4, 9, 8})
 
 local sumOfSquaresEvenNumbers = list
         :filter(function(n) return n % 2 == 0 end)
@@ -34,27 +34,36 @@ FunctionalTable adds a metatable that allows to call the functions as methods an
 ### Map
 ```lua
 local list = {3, 5, 8}
-local squares = map(list, function(n) return n*n end) -- Result: {9, 25, 64}
+local squares = funkmoon.map(list, function(n) return n*n end)
+-- Result: {9, 25, 64}
 ```
 
 ### flatMap
 ```lua
+local values = {0, 5, 10}
+local mapped = funkmoon.flatMap(values, function(x) return {x-1, x, x+1} end)
+-- Result: {-1, 0, 1, 4, 5, 6, 9, 10, 11}
 ```
 
 ### filter
 ```lua
 local list = {1, 4, 6, 3, 7}
-local oddNumbers = filter(list, function(n) return n % 2 == 1 end) -- Result: {1, 3, 7}
+local oddNumbers = funkmoon.filter(list, function(n) return n % 2 == 1 end)
+-- Result: {1, 3, 7}
 ```
 
 ### filterNot
 ```lua
+local values = {1, 2, 3, 4}
+local filtered = funkmoon.filterNot(values, function(n) return n % 2 == 0 end)
+-- Result: {2, 4}
 ```
 
 ### foldLeft
 ```lua
 local list = {1, 2, 3, 4, 5}
-local sum = foldLeft(list, 0)(function(acc, n) return acc + n end) -- Result: 16
+local sum = funkmoon.foldLeft(list, 0)(function(acc, n) return acc + n end)
+-- Result: 16
 ```
 
 ### foldRight
