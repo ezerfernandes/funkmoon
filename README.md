@@ -31,7 +31,8 @@ local sumOfSquaresEvenNumbers = list
 FunctionalTable adds a metatable that allows to call the functions as methods and use this development style.
 
 ## Examples
-### Map
+### map
+Builds a new table by applying 'fn' to all elements of 'list' and using the elements of the resulting tables.
 ```lua
 local list = {3, 5, 8}
 local squares = funkmoon.map(list, function(n) return n*n end)
@@ -39,6 +40,7 @@ local squares = funkmoon.map(list, function(n) return n*n end)
 ```
 
 ### flatMap
+Builds a new table by applying 'fn' to all elements of 'list' and using the elements of the resulting tables.
 ```lua
 local values = {0, 5, 10}
 local mapped = funkmoon.flatMap(values, function(x) return {x-1, x, x+1} end)
@@ -46,6 +48,7 @@ local mapped = funkmoon.flatMap(values, function(x) return {x-1, x, x+1} end)
 ```
 
 ### filter
+Selects all elements of 'list' which satisfy 'predicate'.
 ```lua
 local list = {1, 4, 6, 3, 7}
 local oddNumbers = funkmoon.filter(list, function(n) return n % 2 == 1 end)
@@ -53,6 +56,7 @@ local oddNumbers = funkmoon.filter(list, function(n) return n % 2 == 1 end)
 ```
 
 ### filterNot
+Selects all elements of 'list' which don't satisfy 'predicate'.
 ```lua
 local values = {1, 2, 3, 4}
 local filtered = funkmoon.filterNot(values, function(n) return n % 2 == 0 end)
@@ -60,6 +64,7 @@ local filtered = funkmoon.filterNot(values, function(n) return n % 2 == 0 end)
 ```
 
 ### foldLeft
+Applies a binary function (fn) to startValue and all elements of 'list', going left to right.
 ```lua
 local list = {1, 2, 3, 4, 5}
 local sum = funkmoon.foldLeft(list, 0)(function(acc, n) return acc + n end)
@@ -67,62 +72,82 @@ local sum = funkmoon.foldLeft(list, 0)(function(acc, n) return acc + n end)
 ```
 
 ### foldRight
+Applies a binary function (fn) to startValue and all elements of 'list', going right to left.
 ```lua
 ```
 
 ### reduce
+Reduces the elements of 'list' using the binary operator 'fn'.
 ```lua
 ```
 
 ### find
+Finds the first element of 'list' satisfying a predicate, if any.
 ```lua
+local values = {1, 5, 8, 3, 9, 4, 6}
+local result = funkmoon.find(values, function(n) return n % 2 == 0 end)
+-- result: { [3] = 8 }
 ```
 
 ### arrayPart
+Returns the array-like part of list (1 to n).
 ```lua
 ```
 
 ### partition
+Partitions 'list' in two tables according to 'predicate'.
 ```lua
+local pares, impares = partition({1, 3, 2, 7, 4, 9}, function(n) return n % 2 == 0 end)
+-- pares = {2, 4}; impares = {1, 3, 7, 9}
 ```
 
 ### takeWhile
+Takes longest prefix of elements of 'list' that satisfy 'predicate'.
 ```lua
 ```
 
 ### dropWhile
+Drops longest prefix of elements of 'list' that satisfy 'predicate'.
 ```lua
 ```
 
-### exists 
+### exists
+Tests whether 'predicate' holds for some of the elements of 'list'.
 ```lua
 ```
 
-### forall 
+### forall
+Tests whether 'predicate' holds for all elements of 'list'.
 ```lua
 ```
 
 ### corresponds 
+Tests whether every element of 'list' relates to the corresponding element of 'otherList' by satisfying a test predicate.
 ```lua
 ```
 
-### fill 
+### fill
+Creates a table with 'value' repeated 'n' times.
 ```lua
 ```
 
-### distinct 
+### distinct
+Builds a new list from this 'list' with no duplicate elements.
 ```lua
 ```
 
 ### groupBy
+Gets the elements and keys from 'list' and partitions them by the result of the function fn(key, element), returning a new table where fn(key, element) are the keys and the values are tables with the keys and values.
 ```lua
 ```
 
 ### partial
+Returns a new function with partial application of the given arguments.
 ```lua
 ```
 
 ### isEmpty
+Teste whether 'list' is empty.
 ```lua
 ```
 
@@ -135,17 +160,26 @@ local sum = funkmoon.foldLeft(list, 0)(function(acc, n) return acc + n end)
 ```
 
 ### zip 
+Returns a new table formed from 'list' and 'otherList' by combining corresponding elements in pairs.
 ```lua
 ```
 
 ### unzip
+Converts this 'list' of pairs into two tables of the first and second half of each pair.
 ```lua
 ```
 
 ### slice
+Returns a new table with the elements of 'list' from 'from' to 'to'.
 ```lua
 ```
 
 ### reverse
+Returns a new table with the elements of 'list' reversed.
+```lua
+```
+
+### distinct
+Returns a new table with all dinstinct elements of 'list'.
 ```lua
 ```
