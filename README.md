@@ -103,8 +103,8 @@ local result = funkmoon.arrayPart(mixedTable)
 ### partition
 Partitions 'list' in two tables according to 'predicate'.
 ```lua
-local pares, impares = partition({1, 3, 2, 7, 4, 9}, function(n) return n % 2 == 0 end)
--- pares = {2, 4}; impares = {1, 3, 7, 9}
+local evens, odds = partition({1, 3, 2, 7, 4, 9}, function(n) return n % 2 == 0 end)
+-- evens = {2, 4}; odds = {1, 3, 7, 9}
 ```
 
 ### takeWhile
