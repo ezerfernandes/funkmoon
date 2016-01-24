@@ -224,21 +224,6 @@ function funkmoon.corresponds(list, otherList)
     return match
 end
 
-function funkmoon.fill(n)
-    --[[
-    Usage: fill(times)(value)
-    Creates a table with 'value' repeated 'n' times.
-    ]]--
-    local function newFunction(value)
-        local newList = funkmoon.FunctionalTable({})
-        for i = 1, n do
-            table.insert(newList, value)
-        end
-        return newList
-    end
-    return newFunction
-end
-
 function funkmoon.distinct(list)
     -- Builds a new list from this 'list' with no duplicate elements.
     local tempTable = {}
@@ -420,6 +405,72 @@ function funkmoon.Listify(elemTable)
         end
     end
     return list
+end
+
+function funkmoon.ifill(n)
+    --[[
+    Usage: ifill(times)(value)
+    ]]--
+    local function newFunction(value)
+        local i = 0
+        local function fillIterator()
+            if i < n then
+                i = i + 1
+                return value
+            else
+                return nill
+            end
+        end
+        return fillIterator
+    end
+    return newFunction
+end
+
+function funkmoon.fill(n)
+    --[[
+    Usage: fill(times)(value)
+    Creates a table with 'value' repeated 'n' times.
+    ]]--
+    local function newFunction(value)
+        local newList = funkmoon.FunctionalTable({})
+        for i = 1, n do
+            table.insert(newList, value)
+        end
+        return newList
+    end
+    return newFunction
+end
+
+function funkmoon.irange(from, to, step)
+    if (step == nil) then
+        step = 1
+    end
+    _check_range_params(from, to, step)
+    local i = from
+    function rangeIterator()
+        local ret = i
+        i = i + step
+        if ret <= to then
+            return ret
+        else
+            return nil
+        end
+    end
+    return rangeIterator
+end
+
+function funkmoon.range(from, to, step)
+    if (step == nil) then
+        step = 1
+    end
+    _check_range_params(from, to, step)
+    local i = from
+    local newTable = {}
+    while i <= to do
+        table.insert(newTable, i)
+        i = i + step
+    end
+    return newTable
 end
 
 function funkmoon.stream(fn, ...)
