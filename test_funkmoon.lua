@@ -176,6 +176,35 @@ function test_partition()
     assert(menor:reduce(function(a, b) return a + b end) == 1)
 end
 
+function test_stream()
+    local expected = {1, 2, 3, 5, 8}
+    local function fib(a, b)
+        return { b, a+b }
+    end
+    local i = 1
+    for x, y in funkmoon.stream(fib, 1, 1) do
+        if i > 5 then
+            break
+        end
+        assert(x == expected[i])
+        i = i + 1
+    end
+end
+
+function test_itimes()
+    local expected = {1, 2, 3, 5, 8}
+    local function fib(a, b)
+        return { b, a+b }
+    end
+    local i = 1
+    for x, y in funkmoon.itimes(5, funkmoon.stream(fib, 1, 1)) do
+        assert(x == expected[i])
+        i = i + 1
+    end
+end
+
+test_stream()
+test_itimes()
 test_map()
 test_flatMap()
 test_partition()
