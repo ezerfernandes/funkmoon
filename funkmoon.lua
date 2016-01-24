@@ -453,6 +453,11 @@ function funkmoon.fill(n)
     return newFunction
 end
 
+local function _check_range_params(from, to, step)
+    assert(from <= to, "'from' must be smaller or equal to 'to'.")
+    assert(step > 0, "'step' must be positive.")
+end
+
 function funkmoon.irange(from, to, step)
     if (step == nil) then
         step = 1
