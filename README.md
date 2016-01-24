@@ -139,7 +139,7 @@ local result = funkmoon.forall(values, function(n) return n > 5 end)
 -- result: false
 ```
 
-### corresponds 
+### corresponds
 Tests whether every element of 'list' relates to the corresponding element of 'otherList' by satisfying a test predicate.
 ```lua
 local aList = {1, 2, 3}
@@ -196,7 +196,7 @@ result = funkmoon.isEmpty({2, 3}) -- result: false
 ```lua
 ```
 
-### zip 
+### zip
 Returns a new table formed from 'list' and 'otherList' by combining corresponding elements in pairs.
 ```lua
 local x = {1, 2}
@@ -227,4 +227,45 @@ Returns a new table with the elements of 'list' reversed.
 local list = {5, 2, 4, 1}
 local result = funkmoon.reverse(list)
 -- result: {1, 4, 2, 5}
+```
+
+### range
+```lua
+local result = funkmoon.range(1, 5, 2)
+-- result: {1, 3, 5}
+```
+
+### irange
+```lua
+for i in funkmoon.irange(1, 4, 2) do
+    print(i)
+end
+--[[
+printed:
+1
+3
+]]
+```
+
+### fill
+Creates a table with 'value' repeated 'n' times.
+```lua
+local result = funkmoon.fill(3)("hello!")
+-- result: {"hello!", "hello!", "hello!"}
+```
+
+### ifill
+[explanation]
+```lua
+
+```
+
+### stream
+[explanation]
+```lua
+```
+
+### itimes
+[explanation]
+```lua
 ```
