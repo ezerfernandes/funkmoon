@@ -203,6 +203,36 @@ function test_itimes()
     end
 end
 
+function test_irange()
+    local expected = {1, 3}
+    local j = 1
+    for i in funkmoon.irange(1, 4, 2) do
+        assert(expected[j] == i)
+        j = j + 1
+    end
+end
+
+function test_range()
+    local expected = {1, 3}
+    local got = funkmoon.range(1, 4, 2)
+    for i, elem in pairs(got) do
+        assert(expected[i] == elem)
+    end
+end
+
+function test_ifill()
+    local timesExpected = 3
+    local timesGot = 0
+    for n in funkmoon.ifill(3)("hello") do
+        assert(n == "hello")
+        timesGot = timesGot + 1
+    end
+    assert(timesGot == timesExpected)
+end
+
+test_ifill()
+test_range()
+test_irange()
 test_stream()
 test_itimes()
 test_map()
