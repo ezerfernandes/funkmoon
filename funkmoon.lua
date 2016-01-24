@@ -422,4 +422,26 @@ function funkmoon.Listify(elemTable)
     return list
 end
 
+function funkmoon.stream(fn, ...)
+    local values = arg
+    local function iterator()
+        values = fn(unpack(values))
+        return unpack(values)
+    end
+    return iterator
+end
+
+function funkmoon.itimes(t, fn)
+    local i = 0
+    local function iterator()
+        if i < t then
+            i = i + 1
+            return fn()
+        else
+            return nil
+        end
+    end
+    return iterator
+end
+
 return funkmoon
