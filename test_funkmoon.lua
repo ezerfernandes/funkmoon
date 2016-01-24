@@ -101,7 +101,7 @@ function test_group_by()
     local agrupado = funkmoon.groupBy(testList, function(k, v) return k % 2 end)
     for i, lista in pairs(agrupado) do
         for k, v in pairs(lista) do
-            print(i, k, v[1], v[2])
+            --print(i, k, v[1], v[2])
         end
     end
 end
@@ -115,8 +115,9 @@ end
 function test_takeWhile()
     local testList = {1, 2, 3, 4, 0, 2, 5}
     local result = funkmoon.takeWhile(testList, function(n) return n < 4 end)
-    for _, value in pairs(result) do
-        print(value)
+    local expected = {1, 2, 3}
+    for i, value in pairs(result) do
+        assert(value == expected[i])
     end
 end
 
@@ -132,7 +133,7 @@ end
 function test_Listify()
     local testList = {1, 2, hello="world", 3}
     local got = funkmoon.Listify(testList)
-    print(got[1], got[2], got[3], got[4][1], got[4][2])
+    --print(got[1], got[2], got[3], got[4][1], got[4][2])
 end
 
 function test_isEmpty()
@@ -230,6 +231,15 @@ function test_ifill()
     assert(timesGot == timesExpected)
 end
 
+function test_partialLast()
+    local function divide(a, b)
+        return a / b
+    end
+    local halve = funkmoon.partialLast(divide, 2)
+    assert(2 == halve(4))
+end
+
+test_partialLast()
 test_ifill()
 test_range()
 test_irange()
