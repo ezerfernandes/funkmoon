@@ -264,6 +264,18 @@ function funkmoon.partial(fn, ...)
     return newFunction
 end
 
+function funkmoon.partialLast(fn, ...)
+    --[[
+    Returns a new function with partial application of the last arguments of the
+    function fn.
+    ]]
+    local defArgs = arg
+    local function newFunction(...)
+        return fn(unpack(arg), unpack(defArgs))
+    end
+    return newFunction
+end
+
 function funkmoon.isEmpty(list)
     -- Teste whether 'list' is empty.
     for _, _ in pairs(list) do
