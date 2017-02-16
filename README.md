@@ -14,7 +14,7 @@ local even = funkmoon.filter(list, function(n) return n % 2 == 0 end)
 ```
 
 ### Using functions as methods
-This is the preferred way if you want to use several functions as a pipeline, with [method chaining](https://en.wikipedia.org/wiki/Method_chaining), simulating what you can do in functional languages as Scala, for example.
+This is the preferred way if you want to use several functions as a pipeline, with [method chaining](https://en.wikipedia.org/wiki/Method_chaining), simulating what you can do in functional languages like Scala, for example.
 
 ```lua
 local funkmoon = require "funkmoon"
@@ -218,7 +218,16 @@ local result = funkmoon.min({-3, 2, 9, 4})
 -- checks if the smallest number is positive.
 local result = funkmoon.FunctionalTable(values)
         :min()
-        :forall(function(n) return n > 0 end)
+        :all(function(n) return n > 0 end)
+```
+
+### ifEmpty
+Returns a functional table with the smallest element of a table. 
+```lua
+-- result = 5
+local result = funkmoon.FunctionalTable({ 1, 2, 3, 4 })
+        :filter(function(n) return n > 4 end)
+        :ifEmpty(5)
 ```
 
 ### zip

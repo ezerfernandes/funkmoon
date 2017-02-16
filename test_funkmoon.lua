@@ -174,6 +174,13 @@ function test_zip()
     end
 end
 
+function test_ifEmpty()
+    local result = funkmoon.FunctionalTable({ 1, 2, 3, 4 })
+        :filter(function(n) return n > 4 end)
+        :ifEmpty(5)
+    assert(result == 5, "ifEmpty failed.")
+end
+
 function test_corresponds()
     assert(funkmoon.corresponds({1, 2, 3}, {2, 4, 6})(function(a, b) return b == 2*a end) == true)
     assert(funkmoon.corresponds({1, 2}, {1, 2, 3})(function(a, b) return a == b end) == false)

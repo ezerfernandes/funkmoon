@@ -1,4 +1,4 @@
--- Functional tools for Lua v0.1
+-- Functional tools for Lua v0.11
 
 local funkmoon = {}
 
@@ -378,6 +378,18 @@ function funkmoon.apply(list, fn)
     return fn(unpack(list))
 end
 
+function funkmoon.ifEmpty(list, obj)
+    -- If empty, executes fn and returns its return; if not, returns list.
+    if next(list) ~= nil then
+        return list
+    end
+    if type(obj) == "function" then
+        return obj()
+    else
+        return obj
+    end
+end
+
 local funkMetaTable  = {
     -- return functional table
     map = funkmoon.map,
@@ -407,6 +419,7 @@ local funkMetaTable  = {
     isEmpty = funkmoon.isEmpty,
     any = funkmoon.any,
     all = funkmoon.all,
+    ifEmpty = funkmoon.ifEmpty,
     }
 
 function funkmoon.FunctionalTable(list)
