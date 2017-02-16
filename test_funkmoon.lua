@@ -159,7 +159,8 @@ function test_isEmpty()
 end
 
 function test_max()
-    --for i, elem in pairs(max({1, 2, 3, 2, 1})) do print(i, elem) end
+    assert(funkmoon.max({})[1] == nil)
+    assert(funkmoon.max({3, 2, 4, 1})[1] == 4)
 end
 
 function test_zip()

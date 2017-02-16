@@ -284,28 +284,27 @@ function funkmoon.isEmpty(list)
     return true
 end
 
-local function _compare_maxmin(list, initialValue, comparisonFunction)
-    local selectedValue = initialValue
+local function _compare_maxmin(list, comparisonFunction)
+    if next(list) == nil then
+        return funkmoon.FunctionalTable({})
+    end
+    local selectedValue = list[1]
     for i, elem in pairs(list) do
         if comparisonFunction(elem, selectedValue) then
             selectedValue = elem
         end
     end
-    if comparisonFunction(selectedValue, initialValue) then
-        return selectedValue
-    else
-        return nil
-    end
+    return funkmoon.FunctionalTable({ selectedValue })
 end
 
 function funkmoon.max(list)
-    -- TODO: Documentar
-    return _compare_maxmin(list, -math.huge, function(n, t) return n > t end)
+    -- Returns a table with one value, the greatest element from list
+    return _compare_maxmin(list, function(n, t) return n > t end)
 end
 
 function funkmoon.min(list)
-    -- TODO: Documentar
-    return _compare_maxmin(list, math.huge, function(n, t) return n < t end)
+    -- Returns a table with one value, the smallest element from list
+    return _compare_maxmin(list, function(n, t) return n < t end)
 end
 
 function funkmoon.zip(list, otherList)
@@ -380,6 +379,7 @@ function funkmoon.apply(list, fn)
 end
 
 local funkMetaTable  = {
+    -- return functional table
     map = funkmoon.map,
     flatMap = funkmoon.flatMap,
     filter = funkmoon.filter,
@@ -400,12 +400,13 @@ local funkMetaTable  = {
     isEmpty = funkmoon.isEmpty,
     max = funkmoon.max,
     min = funkmoon.min,
-    zip = funkmoon.zip,
-    unzip = funkmoon.unzip,
     slice = funkmoon.slice,
     reverse = funkmoon.reverse,
     distinct = funkmoon.distinct,
-    apply = funkmoon.apply
+    zip = funkmoon.zip,
+    -- do not return a FunctionalTable
+    unzip = funkmoon.unzip,
+    apply = funkmoon.apply,
     }
 
 function funkmoon.FunctionalTable(list)

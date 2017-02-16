@@ -188,11 +188,6 @@ local values = {0, 9, -4}
 
 -- sum the three values
 local result = funkmoon.apply(values, function(a, b, c) return a+b+c end)
-
--- square of the greatest numbers
-local result = funkmoon.FunctionalTable(values)
-        :max()
-        :apply(function (n) return n * n end)
 ```
 
 ### isEmpty
@@ -203,11 +198,27 @@ result = funkmoon.isEmpty({2, 3}) -- result: false
 ```
 
 ### max
+Returns a functional table with the greatest element of a table. 
 ```lua
+-- result: 9
+local result = funkmoon.max({-3, 2, 9, 4})
+
+-- square of the greatest number
+local result = funkmoon.FunctionalTable(values)
+        :max()
+        :apply(function (n) return n * n end)
 ```
 
 ### min
+Returns a functional table with the smallest element of a table. 
 ```lua
+-- result: -3
+local result = funkmoon.min({-3, 2, 9, 4})
+
+-- checks if the smallest number is positive.
+local result = funkmoon.FunctionalTable(values)
+        :min()
+        :all(function(n) return n > 0 end)
 ```
 
 ### zip
