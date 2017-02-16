@@ -1,4 +1,4 @@
--- Functional tools for Lua v0.01
+-- Functional tools for Lua v0.1
 
 local funkmoon = {}
 
@@ -374,6 +374,11 @@ function funkmoon.distinct(list)
     return newList
 end
 
+function funkmoon.apply(list, fn)
+    -- Applies fn using list as arguments.
+    return fn(unpack(list))
+end
+
 local funkMetaTable  = {
     map = funkmoon.map,
     flatMap = funkmoon.flatMap,
@@ -399,7 +404,8 @@ local funkMetaTable  = {
     unzip = funkmoon.unzip,
     slice = funkmoon.slice,
     reverse = funkmoon.reverse,
-    distinct = funkmoon.distinct
+    distinct = funkmoon.distinct,
+    apply = funkmoon.apply
     }
 
 function funkmoon.FunctionalTable(list)

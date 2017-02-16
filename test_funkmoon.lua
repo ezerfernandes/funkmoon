@@ -130,6 +130,23 @@ function test_dropWhile()
     end
 end
 
+function test_apply()
+    local function sum(a, b) return a + b end
+    assert(funkmoon.apply({1, 2}, sum) == 3, "apply failed.")
+end
+test_apply()
+
+function test_applyFunctionalTable()
+    local list = {1, 2, 3, 4}
+    local function sum(a, b) return a + b end
+    local result = funkmoon.FunctionalTable(list)
+        :filter(function(n) return n % 2 == 0 end)
+        :map(function(n) return n * n end)
+        :apply(sum)
+    assert(result == 20, "apply used with FunctionalTable failed.")
+end
+test_applyFunctionalTable()
+
 function test_Listify()
     local testList = {1, 2, hello="world", 3}
     local got = funkmoon.Listify(testList)
