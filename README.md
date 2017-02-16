@@ -181,8 +181,22 @@ local result = increment(4)
 -- result: 5
 ```
 
+### apply
+Applies a function using list as an argument
+```lua
+local values = {0, 9, -4}
+
+-- sum the three values
+local result = funkmoon.apply(values, function(a, b, c) return a+b+c end)
+
+-- square of the greatest numbers
+local result = funkmoon.FunctionalTable(values)
+        :max()
+        :apply(function (n) return n * n end)
+```
+
 ### isEmpty
-Teste whether 'list' is empty.
+Test whether 'list' is empty.
 ```lua
 local result = funkmoon.isEmpty({}) -- result: true
 result = funkmoon.isEmpty({2, 3}) -- result: false
