@@ -123,19 +123,19 @@ local result = funkmoon.takeWhile(testList, function(n) return n < 4 end)
 -- result: {4, 0, 2, 5}
 ```
 
-### exists
+### any
 Tests whether 'predicate' holds for some of the elements of 'list'.
 ```lua
 local values = {1, 2, 7, 0}
-local result = funkmoon.exists(values, function(n) return n > 5 end)
+local result = funkmoon.any(values, function(n) return n > 5 end)
 -- result: true
 ```
 
-### forall
+### all
 Tests whether 'predicate' holds for all elements of 'list'.
 ```lua
 local values = {1, 2, 7, 0}
-local result = funkmoon.forall(values, function(n) return n > 5 end)
+local result = funkmoon.all(values, function(n) return n > 5 end)
 -- result: false
 ```
 
@@ -218,7 +218,7 @@ local result = funkmoon.min({-3, 2, 9, 4})
 -- checks if the smallest number is positive.
 local result = funkmoon.FunctionalTable(values)
         :min()
-        :all(function(n) return n > 0 end)
+        :forall(function(n) return n > 0 end)
 ```
 
 ### zip

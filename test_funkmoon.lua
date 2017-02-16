@@ -62,13 +62,13 @@ function test_reduce()
 end
 
 
-function test_exists()
-    assert(funkmoon.exists(values, function(n) return n > 5 end) == true,
+function test_any()
+    assert(funkmoon.any(values, function(n) return n > 5 end) == true,
            "test_exists failed.")
 end
 
-function test_forall()
-    assert(funkmoon.forall(values, function(n) return n > 5 end) == false)
+function test_all()
+    assert(funkmoon.all(values, function(n) return n > 5 end) == false)
 end
 
 function test_fill()
@@ -278,8 +278,8 @@ test_find()
 test_foldLeft()
 test_foldRight()
 test_reduce()
-test_exists()
-test_forall()
+test_any()
+test_all()
 test_fill()
 --test_distinct()
 test_functional_table()

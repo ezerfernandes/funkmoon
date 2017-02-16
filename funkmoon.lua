@@ -179,7 +179,7 @@ function funkmoon.reduce(list, fn)
     return accumulator
 end
 
-function funkmoon.exists(list, predicate)
+function funkmoon.any(list, predicate)
     -- Tests whether 'predicate' holds for some of the elements of 'list'.
     local acc = false
     for _, elem in pairs(list) do
@@ -188,7 +188,7 @@ function funkmoon.exists(list, predicate)
     return acc
 end
 
-function funkmoon.forall(list, predicate)
+function funkmoon.all(list, predicate)
     -- Tests whether 'predicate' holds for all elements of 'list'.
     local acc = true
     for _, elem in pairs(list) do
@@ -284,7 +284,7 @@ function funkmoon.isEmpty(list)
     return true
 end
 
-local function _compare_maxmin(list, comparisonFunction)
+local function compare_maxmin(list, comparisonFunction)
     if next(list) == nil then
         return funkmoon.FunctionalTable({})
     end
@@ -299,12 +299,12 @@ end
 
 function funkmoon.max(list)
     -- Returns a table with one value, the greatest element from list
-    return _compare_maxmin(list, function(n, t) return n > t end)
+    return compare_maxmin(list, function(n, t) return n > t end)
 end
 
 function funkmoon.min(list)
     -- Returns a table with one value, the smallest element from list
-    return _compare_maxmin(list, function(n, t) return n < t end)
+    return compare_maxmin(list, function(n, t) return n < t end)
 end
 
 function funkmoon.zip(list, otherList)
@@ -390,14 +390,11 @@ local funkMetaTable  = {
     foldLeft = funkmoon.foldLeft,
     foldRight = funkmoon.foldRight,
     reduce = funkmoon.reduce,
-    exists = funkmoon.exists,
-    forall = funkmoon.forall,
     corresponds = funkmoon.corresponds,
     distinct = funkmoon.distinct,
     groupBy = funkmoon.groupBy,
     takeWhile = funkmoon.takeWhile,
     dropWhile = funkmoon.dropWhile,
-    isEmpty = funkmoon.isEmpty,
     max = funkmoon.max,
     min = funkmoon.min,
     slice = funkmoon.slice,
@@ -407,6 +404,9 @@ local funkMetaTable  = {
     -- do not return a FunctionalTable
     unzip = funkmoon.unzip,
     apply = funkmoon.apply,
+    isEmpty = funkmoon.isEmpty,
+    any = funkmoon.any,
+    all = funkmoon.all,
     }
 
 function funkmoon.FunctionalTable(list)
