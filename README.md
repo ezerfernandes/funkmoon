@@ -14,7 +14,7 @@ local even = funkmoon.filter(list, function(n) return n % 2 == 0 end)
 ```
 
 ### Using functions as methods
-This is the preferred way if you want to use several functions as a pipeline, simulating what you can do in functional languages as Scala, for example.
+This is the preferred way if you want to use several functions as a pipeline, with [method chaining](https://en.wikipedia.org/wiki/Method_chaining), simulating what you can do in functional languages as Scala, for example.
 
 ```lua
 local funkmoon = require "funkmoon"
