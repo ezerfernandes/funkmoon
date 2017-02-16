@@ -278,14 +278,12 @@ end
 
 function funkmoon.isEmpty(list)
     -- Teste whether 'list' is empty.
-    for _, _ in pairs(list) do
-        return false
-    end
-    return true
+    local next = next
+    return next(list) == nil
 end
 
 local function compare_maxmin(list, comparisonFunction)
-    if next(list) == nil then
+    if funkmoon.isEmpty(list) then
         return funkmoon.FunctionalTable({})
     end
     local selectedValue = list[1]
@@ -380,7 +378,7 @@ end
 
 function funkmoon.ifEmpty(list, obj)
     -- If empty, executes fn and returns its return; if not, returns list.
-    if next(list) ~= nil then
+    if not funkmoon.isEmpty(list) then
         return list
     end
     if type(obj) == "function" then
@@ -413,7 +411,7 @@ local funkMetaTable  = {
     reverse = funkmoon.reverse,
     distinct = funkmoon.distinct,
     zip = funkmoon.zip,
-    -- do not return a FunctionalTable
+    -- don't return a FunctionalTable
     unzip = funkmoon.unzip,
     apply = funkmoon.apply,
     isEmpty = funkmoon.isEmpty,
