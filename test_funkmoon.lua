@@ -180,6 +180,16 @@ function test_ifEmpty()
         :ifEmpty(5)
     assert(result == 5, "ifEmpty failed.")
 end
+test_ifEmpty()
+
+function test_ifEmptyCallable()
+    local result = funkmoon.FunctionalTable({ 1, 2, 3, 4 })
+        :filter(function(n) return n > 4 end)
+        :ifEmpty(function() return 2+2 end)
+    assert(result == 4, "ifEmptyCallable failed.")
+end
+test_ifEmptyCallable()
+
 
 function test_corresponds()
     assert(funkmoon.corresponds({1, 2, 3}, {2, 4, 6})(function(a, b) return b == 2*a end) == true)

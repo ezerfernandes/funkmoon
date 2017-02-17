@@ -31,21 +31,12 @@ function funkmoon.flatMap(list, fn)
     return funkmoon.FunctionalTable(flattened)
 end
 
-local function _isArrayIndex(i, maxn)
-    return type(i) == "number" and i > 0 and i <= maxn
-end
-
 function funkmoon.filter(list, predicate)
     -- Selects all elements of 'list' which satisfy 'predicate'.
     local filtered = {}
-    local n = #list
     for i, elem in pairs(list) do
         if predicate(elem) then
-            if _isArrayIndex(i, n) then
-                table.insert(filtered, elem)
-            else
-                filtered[i] = elem
-            end
+            table.insert(filtered, elem)
         end
     end
     return funkmoon.FunctionalTable(filtered)
