@@ -1,4 +1,4 @@
--- Functional tools for Lua v0.11
+-- Functional tools for Lua v0.12
 
 local funkmoon = {}
 
@@ -99,7 +99,7 @@ function funkmoon.dropWhile(list, predicate)
     local satisfiesPredicate = true
     local newList = funkmoon.FunctionalTable({})
     for _, elem in pairs(list) do
-        if predicate(elem) ~= true then
+        if not predicate(elem) then
             satisfiesPredicate = false
         end
         if not satisfiesPredicate then
@@ -114,10 +114,10 @@ local function _fold(list, startValue, foldLeft)
     if foldLeft == true then
         order = 1
         startI = 1
-        endI = table.maxn(list)
+        endI = #list
     else
         order = -1
-        startI = table.maxn(list)
+        startI = #list
         endI = 1
     end
     local function reduceList(fn)
@@ -201,12 +201,12 @@ function funkmoon.corresponds(list, otherList)
     predicate(a, b) -> a function that gets the ith element of list and
     otherList and compares them, returning true or false.
     ]]
-    local function match(comparison)
-        if table.maxn(list) ~= table.maxn(otherList) then
+    local function match(predicate)
+        if #list ~= #otherList then
             return false
         end
-        for i = 1, table.maxn(list) do
-            if comparison(list[i], otherList[i]) ~= true then
+        for i = 1, #list do
+            if not predicate(list[i], otherList[i]) then
                 return false
             end
         end
@@ -248,9 +248,10 @@ end
 
 function funkmoon.partial(fn, ...)
     -- Returns a new function with partial application of the given arguments.
-    local defArgs = arg
+    local defArgs = {...}
     local function newFunction(...)
-        return fn(unpack(defArgs), unpack(arg))
+        local newArgs = {...}
+        return fn(table.unpack(defArgs), table.unpack(newArgs))
     end
     return newFunction
 end
@@ -260,9 +261,10 @@ function funkmoon.partialLast(fn, ...)
     Returns a new function with partial application of the last arguments of the
     function fn.
     ]]
-    local defArgs = arg
+    local defArgs = {...}
     local function newFunction(...)
-        return fn(unpack(arg), unpack(defArgs))
+        local newArgs = {...}
+        return fn(table.unpack(newArgs), table.unpack(defArgs))
     end
     return newFunction
 end
@@ -302,8 +304,8 @@ function funkmoon.zip(list, otherList)
     by combining corresponding elements in pairs.
     ]]
     local zippedList = funkmoon.FunctionalTable({})
-    local maxn_list = table.maxn(list)
-    local maxn_otherlist = table.maxn(otherList)
+    local maxn_list = #list
+    local maxn_otherlist = #otherList
     local minMaxI
     if maxn_list < maxn_otherlist then
         minMaxI = maxn_list
@@ -342,29 +344,16 @@ end
 function funkmoon.reverse(list)
     -- Returns a new table with the elements of 'list' reversed.
     local newList = funkmoon.FunctionalTable({})
-    local length = table.maxn(list)
+    local length = #list
     for i = length, 1, -1 do
         table.insert(newList, list[i])
     end
     return newList
 end
 
-function funkmoon.distinct(list)
-    -- Returns a new table with all dinstinct elements of 'list'.
-    local newList = funkmoon.FunctionalTable({})
-    local newListElems = {}
-    for _, elem in list do
-        newListElems[elem] = true
-    end
-    for elem, _ in newListElems do
-        table.insert(newList, elem)
-    end
-    return newList
-end
-
 function funkmoon.apply(list, fn)
     -- Applies fn using list as arguments.
-    return fn(unpack(list))
+    return fn(table.unpack(list))
 end
 
 function funkmoon.ifEmpty(list, obj)
@@ -400,7 +389,6 @@ local funkMetaTable  = {
     min = funkmoon.min,
     slice = funkmoon.slice,
     reverse = funkmoon.reverse,
-    distinct = funkmoon.distinct,
     zip = funkmoon.zip,
     -- don't return a FunctionalTable
     unzip = funkmoon.unzip,
@@ -439,7 +427,7 @@ function funkmoon.ifill(n)
                 i = i + 1
                 return value
             else
-                return nill
+                return nil
             end
         end
         return fillIterator
@@ -473,7 +461,8 @@ function funkmoon.irange(from, to, step)
     end
     _check_range_params(from, to, step)
     local i = from
-    function rangeIterator()
+
+    return function()
         local ret = i
         i = i + step
         if ret <= to then
@@ -482,7 +471,6 @@ function funkmoon.irange(from, to, step)
             return nil
         end
     end
-    return rangeIterator
 end
 
 function funkmoon.range(from, to, step)
@@ -500,10 +488,10 @@ function funkmoon.range(from, to, step)
 end
 
 function funkmoon.stream(fn, ...)
-    local values = arg
+    local values = {...}
     local function iterator()
-        values = fn(unpack(values))
-        return unpack(values)
+        values = fn(table.unpack(values))
+        return table.unpack(values)
     end
     return iterator
 end
