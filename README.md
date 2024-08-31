@@ -96,6 +96,14 @@ local sum = funkmoon.foldLeft(list, 0)(function(acc, n) return acc + n end)
 Applies a binary function (fn) to startValue and all elements of 'list', going right to left.
 
 ```lua
+local list = {1, 2, 3, 4}
+
+-- Concatenate numbers from right to left
+local result = funkmoon.foldRight(list, "")(function(acc, n)
+    return acc .. tostring(n)
+end)
+
+-- result: "4321"
 ```
 
 `reduce`
