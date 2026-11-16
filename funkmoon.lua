@@ -3,6 +3,7 @@
 
 ---@alias funkmoon.Orderable number|string
 ---@alias funkmoon.TableKey string|number|boolean|table|function|thread|userdata|lightuserdata
+---@alias funkmoon.GroupEntry<T> [integer, T]
 
 ---@class funkmoon.FunctionalTable<T>: { [integer]: T }
 ---@field map fun<U>(self: funkmoon.FunctionalTable<T>, fn: fun(value: T): U): funkmoon.FunctionalTable<U>
@@ -24,10 +25,10 @@
 ---@field all fun(self: funkmoon.FunctionalTable<T>, predicate: fun(value: T): boolean): boolean
 ---@field corresponds fun<U>(self: funkmoon.FunctionalTable<T>, other: U[]): fun(predicate: fun(a: T, b: U): boolean): boolean
 ---@field distinct fun(self: funkmoon.FunctionalTable<T>): funkmoon.FunctionalTable<T>
----@field groupBy fun<K : funkmoon.TableKey>(self: funkmoon.FunctionalTable<T>, fn: fun(index: integer, value: T): K): table<K, [integer, T][]>
+---@field groupBy fun(self: funkmoon.FunctionalTable<T>, fn: fun(index: integer, value: T): funkmoon.TableKey): table<funkmoon.TableKey, funkmoon.GroupEntry<T>[]>
 ---@field isEmpty fun(self: funkmoon.FunctionalTable<T>): boolean
----@field max fun<T : funkmoon.Orderable>(self: funkmoon.FunctionalTable<T>): funkmoon.FunctionalTable<T>
----@field min fun<T : funkmoon.Orderable>(self: funkmoon.FunctionalTable<T>): funkmoon.FunctionalTable<T>
+---@field max fun(self: funkmoon.FunctionalTable<number>|funkmoon.FunctionalTable<string>): funkmoon.FunctionalTable<number>|funkmoon.FunctionalTable<string>
+---@field min fun(self: funkmoon.FunctionalTable<number>|funkmoon.FunctionalTable<string>): funkmoon.FunctionalTable<number>|funkmoon.FunctionalTable<string>
 ---@field take fun(self: funkmoon.FunctionalTable<T>, count: integer): funkmoon.FunctionalTable<T>
 ---@field drop fun(self: funkmoon.FunctionalTable<T>, count: integer): funkmoon.FunctionalTable<T>
 ---@field count fun(self: funkmoon.FunctionalTable<T>, predicate?: fun(value: T): boolean): integer
@@ -372,7 +373,7 @@ end
 ---@generic T, K : funkmoon.TableKey
 ---@param list T[]
 ---@param fn fun(index: integer, value: T): K
----@return table<K, [integer, T][]>
+---@return table<K, funkmoon.GroupEntry<T>[]>
 function funkmoon.groupBy(list, fn)
     local grouped = {}
     for index, elem in ipairs(list) do
@@ -444,7 +445,7 @@ local function compareExtreme(list, isBetter)
     return funkmoon.FunctionalTable({ selected })
 end
 
----@generic T : funkmoon.Orderable
+---@generic T : number | string
 ---@param list T[]
 ---@return funkmoon.FunctionalTable<T> Empty or containing the greatest element.
 function funkmoon.max(list)
@@ -453,7 +454,7 @@ function funkmoon.max(list)
     end)
 end
 
----@generic T : funkmoon.Orderable
+---@generic T : number | string
 ---@param list T[]
 ---@return funkmoon.FunctionalTable<T> Empty or containing the smallest element.
 function funkmoon.min(list)

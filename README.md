@@ -248,6 +248,12 @@ through 5.5, preserve the public `require "funkmoon"` entry point, and document 
 new public helper in this README. LuaCATS annotations should describe the
 runtime behavior without adding runtime dependencies.
 
+## Verification
+
+Run the regression suite with `lua test_funkmoon.lua`. CI repeats it on Lua 5.2
+through 5.5 and checks the LuaLS examples. `typecheck_invalid.lua` contains
+intentional `max`/`min` type mismatches that the type-check job expects to catch.
+
 ## Releasing
 
 Update the module and rockspec versions together, create a matching `vX.Y.Z`

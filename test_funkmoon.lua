@@ -1,37 +1,60 @@
 local funkmoon = require "funkmoon"
 
+local function assertSequence(actual, expected, message)
+    message = message or "sequence mismatch"
+    assert(#actual == #expected, message .. ": length mismatch")
+    for index = 1, #expected do
+        assert(actual[index] == expected[index], message .. ": item " .. index)
+    end
+end
+
+local function captureArgs(...)
+    return { n = select("#", ...), ... }
+end
+
+local function assertPacked(actual, expected, message)
+    message = message or "packed arguments mismatch"
+    assert(actual.n == expected.n, message .. ": arity mismatch")
+    for index = 1, expected.n do
+        assert(actual[index] == expected[index], message .. ": item " .. index)
+    end
+end
+
+local function assertRaises(fn, message)
+    local ok, err = pcall(fn)
+    assert(not ok, "expected an error containing " .. message)
+    assert(tostring(err):find(message, 1, true), "unexpected error: " .. tostring(err))
+end
+
 local values = {3, 6, 0, -5, 4, 8}
 
 local function test_map()
     local expected = {9, 36, 0, 25, 16, 64}
-    local mapped = funkmoon.map(values, function(n) return n * n end)
-    for i, elem in pairs(mapped) do
-        assert(expected[i] == elem, "test_map failed.")
-    end
+    local seen = {}
+    local mapped = funkmoon.map(values, function(n)
+        table.insert(seen, n)
+        return n * n
+    end)
+    assertSequence(mapped, expected, "test_map")
+    assertSequence(seen, values, "map traversal order")
 end
 
 local function test_flatMap()
     local expected = {0, 1, 2, 1, 2, 3, 2, 3, 4}
     local mapped = funkmoon.flatMap({1, 2, 3}, function(x) return {x-1, x, x+1} end)
-    for i, elem in pairs(expected) do
-        assert(elem == expected[i], "test_flatMap failed.")
-    end
+    assertSequence(mapped, expected, "test_flatMap")
 end
 
 local function test_filter()
     local expected = {6, 0, 4, 8}
     local filtered = funkmoon.filter(values, function(n) return n % 2 == 0 end)
-    for i, elem in pairs(filtered) do
-        assert(expected[i] == elem, "test_filter failed.")
-    end
+    assertSequence(filtered, expected, "test_filter")
 end
 
 local function test_filterNot()
     local expected = {3, -5}
     local filtered = funkmoon.filterNot(values, function(n) return n % 2 == 0 end)
-    for i, elem in pairs(filtered) do
-        assert(expected[i] == elem, "test_filter failed.")
-    end
+    assertSequence(filtered, expected, "test_filterNot")
 end
 
 local function test_find()
@@ -81,9 +104,8 @@ local function test_distinct()
     local testList = {1, 2, 3, 1, 2, 5}
     local expected = {1, 2, 3, 5}
     local got = funkmoon.distinct(testList)
-    for i, elem in pairs(got) do
-        assert(elem == expected[i], "test_distinct failed.")
-    end
+    assertSequence(got, expected, "test_distinct")
+    assertSequence(funkmoon.distinct({3, 1, 3, 2, 1, 5}), {3, 1, 2, 5}, "stable distinct")
 end
 
 local function test_functional_table()
@@ -97,18 +119,80 @@ end
 
 local function test_group_by()
     local testList = {1, 5, 3, 9, 2, 5}
-    local agrupado = funkmoon.groupBy(testList, function(k, v) return k % 2 end)
-    for i, lista in pairs(agrupado) do
-        for k, v in pairs(lista) do
-            --print(i, k, v[1], v[2])
-        end
+    local calls = 0
+    local grouped = funkmoon.groupBy(testList, function(index, value)
+        calls = calls + 1
+        assert(index == calls, "groupBy callback order")
+        return value % 2
+    end)
+    assert(calls == #testList, "groupBy should call its key function once per item")
+    assert(#grouped[1] == 5)
+    assert(#grouped[0] == 1)
+    for offset, sourceIndex in ipairs({1, 2, 3, 4, 6}) do
+        assert(grouped[1][offset][1] == sourceIndex)
+        assert(grouped[1][offset][2] == testList[sourceIndex])
     end
+    assert(grouped[0][1][1] == 5)
+    assert(grouped[0][1][2] == 2)
+    assertRaises(function()
+        funkmoon.groupBy({1}, function() return nil end)
+    end, "nil or NaN")
+    assertRaises(function()
+        funkmoon.groupBy({1}, function() return 0 / 0 end)
+    end, "nil or NaN")
 end
 
 local function test_partial()
     local function division(a, b) return a / b end
     local fraction = funkmoon.partial(division, 1)
-    assert(fraction(4), 0.25)
+    assert(fraction(4) == 0.25, "partial failed.")
+end
+
+local function test_flattenDeep_cycle()
+    assertSequence(funkmoon.flattenDeep({1, {2, {3}}, 4}), {1, 2, 3, 4}, "flattenDeep")
+    local cycle = {1}
+    cycle[2] = cycle
+    assertRaises(function()
+        funkmoon.flattenDeep(cycle)
+    end, "cyclic table")
+end
+
+local function test_nil_preserving_varargs()
+    local partial = funkmoon.partial(captureArgs, "bound")
+    assertPacked(partial(nil, "middle", nil), {
+        n = 4,
+        [1] = "bound",
+        [3] = "middle",
+    }, "partial nil arity")
+
+    local partialLast = funkmoon.partialLast(captureArgs, "tail", nil)
+    assertPacked(partialLast("head", nil), {
+        n = 4,
+        [1] = "head",
+        [3] = "tail",
+    }, "partialLast nil arity")
+
+    assertPacked(funkmoon.apply({ n = 3, [1] = "head", [3] = "tail" }, captureArgs), {
+        n = 3,
+        [1] = "head",
+        [3] = "tail",
+    }, "apply nil arity")
+
+    local calls = 0
+    local nextValues = { n = 4, [1] = "next", [3] = "state" }
+    local iterator = funkmoon.stream(function(...)
+        local state = captureArgs(...)
+        calls = calls + 1
+        if calls == 1 then
+            assertPacked(state, { n = 3, [1] = "start", [3] = "finish" }, "stream input nil arity")
+            return "next", nil, "state", nil
+        end
+        assertPacked(state, { n = 4, [1] = "next", [3] = "state" }, "stream state nil arity")
+        return state[1], state[2], state[3], state[4]
+    end, "start", nil, "finish")
+
+    assertPacked(captureArgs(iterator()), nextValues, "stream output nil arity")
+    assertPacked(captureArgs(iterator()), nextValues, "stream subsequent output nil arity")
 end
 
 local function test_takeWhile()
@@ -124,9 +208,7 @@ local function test_dropWhile()
     local testList = {1, 2, 2, 4, 6, 2, 1}
     local expected = {6, 2, 1}
     local got = funkmoon.dropWhile(testList, function(n) return n < 5 end)
-    for i, elem in pairs(got) do
-        assert(elem == expected[i])
-    end
+    assertSequence(got, expected, "test_dropWhile")
 end
 
 local function test_apply()
@@ -159,6 +241,8 @@ end
 local function test_max()
     assert(funkmoon.max({})[1] == nil)
     assert(funkmoon.max({3, 2, 4, 1})[1] == 4)
+    assert(funkmoon.min({"pear", "apple", "orange"})[1] == "apple")
+    assertRaises(function() funkmoon.max({1, "2"}) end, "must all be numbers or all be strings")
 end
 
 local function test_zip()
@@ -287,6 +371,8 @@ test_unzip()
 test_max()
 test_takeWhile()
 test_group_by()
+test_flattenDeep_cycle()
+test_nil_preserving_varargs()
 test_filter()
 test_filterNot()
 test_find()
@@ -296,7 +382,7 @@ test_reduce()
 test_any()
 test_all()
 test_fill()
---test_distinct()
+test_distinct()
 test_functional_table()
 test_partial()
 test_Listify()
