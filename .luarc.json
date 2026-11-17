@@ -1,0 +1,28 @@
+{
+  "runtime.version": "Lua 5.5",
+  "runtime.path": [
+    "?.lua",
+    "?/init.lua"
+  ],
+  "workspace.library": [
+    "./funkmoon.lua"
+  ],
+  "workspace.checkThirdParty": false,
+  "workspace.ignoreDir": [
+    "typecheck_invalid.lua"
+  ],
+  "diagnostics.disable": [
+    "unused-local",
+    "unused-function",
+    "redundant-return-value"
+  ],
+  "diagnostics.groupFileStatus": {
+    "type-check": "Any"
+  },
+  "diagnostics.neededFileStatus": {
+    "param-type-mismatch": "Any!"
+  },
+  "diagnostics.severity": {
+    "param-type-mismatch": "Warning!"
+  }
+}
